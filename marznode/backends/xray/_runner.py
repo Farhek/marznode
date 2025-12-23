@@ -100,6 +100,7 @@ class XrayCore:
         """capture the logs, push it into the stream, and store it in the deck
         note that the stream blocks sending if it's full, so a deck is necessary"""
 
+        process = self._process
         async def capture_stream(stream):
             while True:
                 output = await stream.readline()
@@ -118,10 +119,10 @@ class XrayCore:
                     return
 
         await asyncio.gather(
-            capture_stream(self._process.stderr), capture_stream(self._process.stdout)
+            capture_stream(process.stderr), capture_stream(process.stdout)
         )
 
-        await self._process.communicate()
+        await process.communicate()
         logger.warning("Xray stopped/died")
         self.stop_event.set()
 
